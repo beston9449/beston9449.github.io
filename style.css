@@ -1,0 +1,61 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  font-family: Arial, sans-serif;
+}
+
+.mobile-layout {
+  width: 375px;
+  max-width: 100%;
+  background-color: white;
+  border: 1px solid #ddd;
+  overflow: hidden;
+}
+main {
+  padding: 2px;
+}
+
+.accBox {
+  padding: 0.5rem 0.5rem;
+  border-radius: 7px;
+  font-size: 12px;
+  background: #006eff;
+  color: white;
+  flex-grow: 1;
+}
+.accBox h4 {
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.accBox h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+.fullBox {
+  display: flex;
+  gap: 0.2rem;
+  padding: 0.2rem;
+}
+.add-account-btn {
+  background: #006eff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.add-account-btn:hover {
+  background: #0056d1;
+}
