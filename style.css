@@ -31,6 +31,20 @@ main {
   background: #006eff;
   color: white;
   flex-grow: 1;
+  cursor: pointer;
+}
+
+.accBox.selected {
+  background: #ffcc00;
+  color: black;
+}
+
+.accBox--2 {
+  background: rgb(83, 83, 4);
+}
+
+.accBox--3 {
+  background: orange;
 }
 .accBox h4 {
   margin: 0;
@@ -42,8 +56,12 @@ main {
   font-size: 1.2rem;
 }
 .fullBox {
-  display: flex;
+  display: grid;
   gap: 0.2rem;
+  grid-template-columns: repeat(
+    2,
+    1fr
+  ); /* Makes sure each of the new account will go on next line not in 3s but in 2s, 2 per line just like the app*/
   padding: 0.2rem;
 }
 .add-account-btn {
