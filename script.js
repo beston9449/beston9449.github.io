@@ -21,6 +21,11 @@ function getTask() {
     taskBox.remove();
   });
 
+  taskBox.addEventListener('click', () => {
+    taskBox.style.backgroundColor = 'green';
+    taskText.style.textDecoration = 'line-through';
+  });
+
   taskInput.value = '';
   taskInput.focus();
 }
