@@ -30,7 +30,13 @@ function getTask() {
   taskInput.focus();
 }
 
-addButton.addEventListener('click', () => getTask());
+addButton.addEventListener('click', () => {
+  if (taskInput.value === '') {
+    alert('Empty task not allowed');
+  } else {
+    getTask();
+  }
+});
 
 taskInput.addEventListener('keypress', (e) => {
   if (e.key == 'Enter') addButton.click();
