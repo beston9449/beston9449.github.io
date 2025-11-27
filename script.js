@@ -1,6 +1,5 @@
 let container = document.querySelector('.container');
 
-container.textContent = 'Task container';
 container.style.border = '2px solid black';
 
 let addButton = document.querySelector('.addBtn');
@@ -20,15 +19,16 @@ function getTask() {
   taskBox.dataset.completed = 'false';
   let taskText = document.createElement('span');
   let deleteButton = document.createElement('button');
-  let completeButton = document.createElement('button');
+  let checkBox = document.createElement('input');
+  checkBox.type = 'checkbox';
 
   taskText.textContent = taskInput.value;
   taskBox.appendChild(taskText);
   taskBox.appendChild(deleteButton);
-  taskBox.appendChild(completeButton);
+  taskBox.appendChild(checkBox);
   container.appendChild(taskBox);
   deleteButton.textContent = 'Delete';
-  completeButton.textContent = 'Complete';
+  checkBox.textContent = 'Complete';
 
   deleteButton.addEventListener('click', () => {
     if (taskBox.dataset.completed === 'true') {
@@ -40,15 +40,21 @@ function getTask() {
     taskBox.remove();
   });
 
-  completeButton.addEventListener('click', () => {
-    // taskText.style.textDecoration = 'line-through';
-    if (taskBox.dataset.completed === 'false') {
+  checkBox.addEventListener('change', () => {
+    if (checkBox.checked) {
       taskBox.dataset.completed = 'true';
       taskBox.style.backgroundColor = 'green';
       completedCounter++;
       --activeCounter;
       counter.textContent = updateCounterText();
-      
+      container.appendChild(taskBox);
+    } else {
+      taskBox.dataset.completed = 'false';
+      taskBox.style.backgroundColor = '';
+      completedCounter--;
+      ++activeCounter;
+      counter.textContent = updateCounterText();
+      container.prepend(taskBox);
     }
   });
 
