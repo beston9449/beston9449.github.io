@@ -70,11 +70,20 @@ function clearAllTasks() {
   taskListNode.forEach((task) => {
     if (task.dataset.completed === 'true') {
       task.remove();
+      --completedCounter;
     }
   });
+  counter.textContent = updateCounterText();
 }
 
-clearBtn.addEventListener('click', () => clearAllTasks());
+clearBtn.addEventListener('click', () => {
+  let tasksArray = [...document.querySelectorAll('.container div')];
+  if (tasksArray.some((task) => task.dataset.completed === 'true')) {
+    clearAllTasks();
+  } else {
+    alert('No completed tasks available!');
+  }
+});
 
 addButton.addEventListener('click', () => {
   if (taskInput.value === '') {
