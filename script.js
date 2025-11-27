@@ -6,6 +6,10 @@ let addButton = document.querySelector('.addBtn');
 let taskInput = document.querySelector('.inputTask');
 let body = document.querySelector('body');
 let counter = document.createElement('span');
+let clearBtn = document.createElement('button');
+clearBtn.textContent = 'Clear all completed tasks';
+body.insertBefore(clearBtn, container);
+
 body.appendChild(counter);
 
 let activeCounter = 0;
@@ -28,7 +32,6 @@ function getTask() {
   taskBox.appendChild(checkBox);
   container.appendChild(taskBox);
   deleteButton.textContent = 'Delete';
-  checkBox.textContent = 'Complete';
 
   deleteButton.addEventListener('click', () => {
     if (taskBox.dataset.completed === 'true') {
@@ -61,6 +64,17 @@ function getTask() {
   taskInput.value = '';
   taskInput.focus();
 }
+
+function clearAllTasks() {
+  let taskListNode = document.querySelectorAll('.container div');
+  taskListNode.forEach((task) => {
+    if (task.dataset.completed === 'true') {
+      task.remove();
+    }
+  });
+}
+
+clearBtn.addEventListener('click', () => clearAllTasks());
 
 addButton.addEventListener('click', () => {
   if (taskInput.value === '') {
