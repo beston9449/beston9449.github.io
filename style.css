@@ -1,0 +1,22 @@
+.list {
+  border: 1px solid red;
+}
+
+.list h2 {
+  color: blue;
+}
+
+.mainContainer {
+  display: flex;
+  max-width: 500px;
+  max-height: 500px;
+}
+
+body {
+  display: flex;
+}
+
+.taskList {
+  display: flex;
+  flex-direction: column;
+}

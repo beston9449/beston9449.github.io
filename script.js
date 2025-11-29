@@ -1,68 +1,59 @@
-let container = document.querySelector('.container');
+let container = document.querySelector('.mainContainer');
+let inputContainer = document.querySelector('.addCard');
 
-container.style.border = '2px solid black';
-
-let addButton = document.querySelector('.addBtn');
-let taskInput = document.querySelector('.inputTask');
+let listInput = document.createElement('input');
+listInput.placeholder = 'Enter list name...';
+listInput.type = 'text';
 let body = document.querySelector('body');
 let counter = document.createElement('span');
 let clearBtn = document.createElement('button');
-clearBtn.textContent = 'Clear all completed tasks';
-body.insertBefore(clearBtn, container);
+let addList = document.createElement('button');
+inputContainer.appendChild(addList);
+inputContainer.appendChild(listInput);
+addList.textContent = 'Add list';
 
-body.appendChild(counter);
+function createList() {
+  let list = document.createElement('div');
+  list.className = 'list';
+  let addTask = document.createElement('button');
+  let taskInput = document.createElement('input');
+  let listTitle = document.createElement('h2');
+  let taskList = document.createElement('div');
+  taskList.className = 'taskList';
+
+  container.appendChild(list);
+  listTitle.textContent = listInput.value;
+  list.appendChild(listTitle);
+  list.appendChild(taskInput);
+  list.appendChild(addTask);
+  addTask.textContent = 'Add card';
+  list.appendChild(taskList);
+  listInput.value = '';
+
+  addTask.addEventListener('click', () => {
+    let taskSpan = document.createElement('span');
+    taskSpan.textContent = taskInput.value;
+    taskList.appendChild(taskSpan);
+    taskInput.value = '';
+  });
+  taskInput.addEventListener('keypress', (e) => {
+    if (e.key == 'Enter') addTask.click();
+  });
+}
+
+listInput.addEventListener('keypress', (e) => {
+  if (e.key == 'Enter') addList.click();
+});
+
+addList.addEventListener('click', () => createList());
+
+clearBtn.textContent = 'Clear all completed tasks';
 
 let activeCounter = 0;
 let completedCounter = 0;
 
 function updateCounterText() {
   return `Active Tasks: ${activeCounter} Completed Tasks: ${completedCounter}`;
-}
-function getTask() {
-  let taskBox = document.createElement('div');
-  taskBox.dataset.completed = 'false';
-  let taskText = document.createElement('span');
-  let deleteButton = document.createElement('button');
-  let checkBox = document.createElement('input');
-  checkBox.type = 'checkbox';
-
-  taskText.textContent = taskInput.value;
-  taskBox.appendChild(taskText);
-  taskBox.appendChild(deleteButton);
-  taskBox.appendChild(checkBox);
-  container.appendChild(taskBox);
-  deleteButton.textContent = 'Delete';
-
-  deleteButton.addEventListener('click', () => {
-    if (taskBox.dataset.completed === 'true') {
-      --completedCounter;
-    } else {
-      --activeCounter;
-    }
-    counter.textContent = updateCounterText();
-    taskBox.remove();
-  });
-
-  checkBox.addEventListener('change', () => {
-    if (checkBox.checked) {
-      taskBox.dataset.completed = 'true';
-      taskBox.style.backgroundColor = 'green';
-      completedCounter++;
-      --activeCounter;
-      counter.textContent = updateCounterText();
-      container.appendChild(taskBox);
-    } else {
-      taskBox.dataset.completed = 'false';
-      taskBox.style.backgroundColor = '';
-      completedCounter--;
-      ++activeCounter;
-      counter.textContent = updateCounterText();
-      container.prepend(taskBox);
-    }
-  });
-
-  taskInput.value = '';
-  taskInput.focus();
 }
 
 function clearAllTasks() {
@@ -85,7 +76,7 @@ clearBtn.addEventListener('click', () => {
   }
 });
 
-addButton.addEventListener('click', () => {
+addTask.addEventListener('click', () => {
   if (taskInput.value === '') {
     alert('Empty task not allowed');
   } else {
@@ -93,8 +84,4 @@ addButton.addEventListener('click', () => {
     activeCounter++;
     counter.textContent = updateCounterText();
   }
-});
-
-taskInput.addEventListener('keypress', (e) => {
-  if (e.key == 'Enter') addButton.click();
 });
