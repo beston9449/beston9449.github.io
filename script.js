@@ -1,5 +1,6 @@
 let container = document.querySelector('.mainContainer');
 let inputContainer = document.querySelector('.addCard');
+let draggedTask = null;
 
 let listInput = document.createElement('input');
 listInput.placeholder = 'Enter list name...';
@@ -30,8 +31,21 @@ function createList() {
   list.appendChild(taskList);
   listInput.value = '';
 
+  taskList.addEventListener('dragover', function (e) {
+    e.preventDefault();
+  });
+
+  taskList.addEventListener('drop', function (e) {
+    e.preventDefault();
+    if (draggedTask) {
+      e.currentTarget.appendChild(draggedTask);
+      draggedTask = null;
+    }
+  });
+
   addTask.addEventListener('click', () => {
     let taskCard = document.createElement('div');
+    taskCard.className = 'taskCard';
     let taskSpan = document.createElement('span');
     let taskDelete = document.createElement('button');
     let taskCheckComplete = document.createElement('input');
@@ -43,6 +57,12 @@ function createList() {
     taskCard.appendChild(taskDelete);
     taskCard.append(taskCheckComplete);
     taskInput.focus();
+    taskCard.draggable = 'true';
+
+    taskCard.addEventListener('dragstart', function (e) {
+      e.dataTransfer.setData('text/plain', null);
+      draggedTask = taskCard;
+    });
 
     taskDelete.addEventListener('click', () => {
       taskCard.remove();
@@ -53,6 +73,8 @@ function createList() {
     taskCheckComplete.addEventListener('change', () => {
       if (taskCheckComplete.checked) {
         taskSpan.style.textDecorationLine = 'line-through';
+      } else {
+        taskSpan.style.textDecorationLine = '';
       }
     });
   });
