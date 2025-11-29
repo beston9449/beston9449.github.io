@@ -60,7 +60,6 @@ function createList() {
     taskCard.draggable = 'true';
 
     taskCard.addEventListener('dragstart', function (e) {
-      e.dataTransfer.setData('text/plain', null);
       draggedTask = taskCard;
     });
 
@@ -79,7 +78,7 @@ function createList() {
     });
   });
   taskInput.addEventListener('keypress', (e) => {
-    if (e.key == 'Enter') addTask.click();
+    if (e.key === 'Enter') addTask.click();
   });
 }
 

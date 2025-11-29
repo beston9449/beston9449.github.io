@@ -19,6 +19,9 @@ body {
 .taskList {
   display: flex;
   flex-direction: column;
+  min-height: 100px;
+  min-width: 100px;
+  border: 1px solid black;
 }
 
 .taskCard {
