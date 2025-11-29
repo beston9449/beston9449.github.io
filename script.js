@@ -31,9 +31,18 @@ function createList() {
   listInput.value = '';
 
   addTask.addEventListener('click', () => {
+    let taskCard = document.createElement('div');
     let taskSpan = document.createElement('span');
+    let taskDelete = document.createElement('button');
+    let taskCheckComplete = document.createElement('input');
+    taskDelete.textContent = 'Delete';
+    taskCheckComplete.type = 'checkbox';
     taskSpan.textContent = taskInput.value;
-    taskList.appendChild(taskSpan);
+    taskList.appendChild(taskCard);
+    taskCard.appendChild(taskSpan);
+    taskCard.appendChild(taskDelete);
+    taskCard.append(taskCheckComplete);
+
     taskInput.value = '';
   });
   taskInput.addEventListener('keypress', (e) => {
