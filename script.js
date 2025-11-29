@@ -42,8 +42,19 @@ function createList() {
     taskCard.appendChild(taskSpan);
     taskCard.appendChild(taskDelete);
     taskCard.append(taskCheckComplete);
+    taskInput.focus();
+
+    taskDelete.addEventListener('click', () => {
+      taskCard.remove();
+    });
 
     taskInput.value = '';
+
+    taskCheckComplete.addEventListener('change', () => {
+      if (taskCheckComplete.checked) {
+        taskSpan.style.textDecorationLine = 'line-through';
+      }
+    });
   });
   taskInput.addEventListener('keypress', (e) => {
     if (e.key == 'Enter') addTask.click();
