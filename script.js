@@ -1,13 +1,10 @@
-let container = document.querySelector('.mainContainer');
+let mainContainer = document.querySelector('.mainContainer');
 let inputContainer = document.querySelector('.addCard');
 let draggedTask = null;
-
 let listInput = document.createElement('input');
 listInput.placeholder = 'Enter list name...';
 listInput.type = 'text';
 let body = document.querySelector('body');
-let counter = document.createElement('span');
-let clearBtn = document.createElement('button');
 let addList = document.createElement('button');
 inputContainer.appendChild(addList);
 inputContainer.appendChild(listInput);
@@ -22,30 +19,33 @@ function createList() {
   let taskList = document.createElement('div');
   taskList.className = 'taskList';
 
-  container.appendChild(list);
+  mainContainer.appendChild(list);
+
   listTitle.textContent = listInput.value;
   list.appendChild(listTitle);
   list.appendChild(taskInput);
   list.appendChild(addTask);
   addTask.textContent = 'Add card';
   list.appendChild(taskList);
-  listInput.value = '';
 
-  taskList.addEventListener('dragover', function (e) {
+  taskList.addEventListener('dragover', (e) => {
     e.preventDefault();
-  });
+    const draggable = document.querySelector('.dragging');
+    if (!draggable) return;
 
-  taskList.addEventListener('drop', function (e) {
-    e.preventDefault();
-    if (draggedTask) {
-      e.currentTarget.appendChild(draggedTask);
-      draggedTask = null;
+    const afterElement = getDragAfterElement(taskList, e.clientY);
+    if (afterElement == null) {
+      taskList.appendChild(draggable);
+    } else {
+      taskList.insertBefore(draggable, afterElement);
     }
   });
+  listInput.value = '';
 
   addTask.addEventListener('click', () => {
     let taskCard = document.createElement('div');
-    taskCard.className = 'taskCard';
+    taskCard.className = 'taskCardDraggable';
+
     let taskSpan = document.createElement('span');
     let taskDelete = document.createElement('button');
     let taskCheckComplete = document.createElement('input');
@@ -59,8 +59,12 @@ function createList() {
     taskInput.focus();
     taskCard.draggable = 'true';
 
-    taskCard.addEventListener('dragstart', function (e) {
-      draggedTask = taskCard;
+    taskCard.addEventListener('dragstart', () => {
+      taskCard.classList.add('dragging');
+    });
+
+    taskCard.addEventListener('dragend', () => {
+      taskCard.classList.remove('dragging');
     });
 
     taskDelete.addEventListener('click', () => {
@@ -88,41 +92,19 @@ listInput.addEventListener('keypress', (e) => {
 
 addList.addEventListener('click', () => createList());
 
-clearBtn.textContent = 'Clear all completed tasks';
+function getDragAfterElement(container, y) {
+  const draggableElements = [...container.querySelectorAll('.taskCardDraggable:not(.dragging)')];
 
-let activeCounter = 0;
-let completedCounter = 0;
-
-function updateCounterText() {
-  return `Active Tasks: ${activeCounter} Completed Tasks: ${completedCounter}`;
+  return draggableElements.reduce(
+    (closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    },
+    { offset: Number.NEGATIVE_INFINITY }
+  ).element;
 }
-
-function clearAllTasks() {
-  let taskListNode = document.querySelectorAll('.container div');
-  taskListNode.forEach((task) => {
-    if (task.dataset.completed === 'true') {
-      task.remove();
-      --completedCounter;
-    }
-  });
-  counter.textContent = updateCounterText();
-}
-
-clearBtn.addEventListener('click', () => {
-  let tasksArray = [...document.querySelectorAll('.container div')];
-  if (tasksArray.some((task) => task.dataset.completed === 'true')) {
-    clearAllTasks();
-  } else {
-    alert('No completed tasks available!');
-  }
-});
-
-addTask.addEventListener('click', () => {
-  if (taskInput.value === '') {
-    alert('Empty task not allowed');
-  } else {
-    getTask();
-    activeCounter++;
-    counter.textContent = updateCounterText();
-  }
-});
