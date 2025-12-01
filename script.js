@@ -1,96 +1,91 @@
-let mainContainer = document.querySelector('.mainContainer');
-let inputContainer = document.querySelector('.addCard');
+let boardContainer = document.querySelector('.mainContainer');
+let newListContainer = document.querySelector('.addCard');
+let bodyElement = document.querySelector('body');
+
+let newListInput = document.createElement('input');
+newListInput.placeholder = 'Enter list name...';
+newListInput.type = 'text';
+
+let addListButton = document.createElement('button');
+addListButton.textContent = 'Add list';
+
+newListContainer.appendChild(addListButton);
+newListContainer.appendChild(newListInput);
+
 let draggedTask = null;
-let listInput = document.createElement('input');
-listInput.placeholder = 'Enter list name...';
-listInput.type = 'text';
-let body = document.querySelector('body');
-let addList = document.createElement('button');
-inputContainer.appendChild(addList);
-inputContainer.appendChild(listInput);
-addList.textContent = 'Add list';
 
 function createList() {
-  let list = document.createElement('div');
-  list.className = 'list';
-  let addTask = document.createElement('button');
-  let taskInput = document.createElement('input');
+  let listElement = document.createElement('div');
+  listElement.className = 'list';
+
   let listTitle = document.createElement('h2');
-  let taskList = document.createElement('div');
-  taskList.className = 'taskList';
+  listTitle.textContent = newListInput.value;
 
-  mainContainer.appendChild(list);
+  let taskInput = document.createElement('input');
+  let addTaskButton = document.createElement('button');
+  addTaskButton.textContent = 'Add card';
 
-  listTitle.textContent = listInput.value;
-  list.appendChild(listTitle);
-  list.appendChild(taskInput);
-  list.appendChild(addTask);
-  addTask.textContent = 'Add card';
-  list.appendChild(taskList);
+  let taskListContainer = document.createElement('div');
+  taskListContainer.className = 'taskList';
 
-  taskList.addEventListener('dragover', (e) => {
+  listElement.append(listTitle, taskInput, addTaskButton, taskListContainer);
+  boardContainer.appendChild(listElement);
+
+  newListInput.value = '';
+
+  taskListContainer.addEventListener('dragover', (e) => {
     e.preventDefault();
     const draggable = document.querySelector('.dragging');
     if (!draggable) return;
 
-    const afterElement = getDragAfterElement(taskList, e.clientY);
+    const afterElement = getDragAfterElement(taskListContainer, e.clientY);
     if (afterElement == null) {
-      taskList.appendChild(draggable);
+      taskListContainer.appendChild(draggable);
     } else {
-      taskList.insertBefore(draggable, afterElement);
+      taskListContainer.insertBefore(draggable, afterElement);
     }
   });
-  listInput.value = '';
 
-  addTask.addEventListener('click', () => {
+  addTaskButton.addEventListener('click', () => {
     let taskCard = document.createElement('div');
     taskCard.className = 'taskCardDraggable';
+    taskCard.draggable = true;
 
-    let taskSpan = document.createElement('span');
-    let taskDelete = document.createElement('button');
-    let taskCheckComplete = document.createElement('input');
-    taskDelete.textContent = 'Delete';
-    taskCheckComplete.type = 'checkbox';
-    taskSpan.textContent = taskInput.value;
-    taskList.appendChild(taskCard);
-    taskCard.appendChild(taskSpan);
-    taskCard.appendChild(taskDelete);
-    taskCard.append(taskCheckComplete);
-    taskInput.focus();
-    taskCard.draggable = 'true';
+    let taskText = document.createElement('span');
+    taskText.textContent = taskInput.value;
 
-    taskCard.addEventListener('dragstart', () => {
-      taskCard.classList.add('dragging');
-    });
+    let deleteTaskButton = document.createElement('button');
+    deleteTaskButton.textContent = 'Delete';
 
-    taskCard.addEventListener('dragend', () => {
-      taskCard.classList.remove('dragging');
-    });
+    let completeCheckbox = document.createElement('input');
+    completeCheckbox.type = 'checkbox';
 
-    taskDelete.addEventListener('click', () => {
-      taskCard.remove();
-    });
+    taskCard.append(taskText, deleteTaskButton, completeCheckbox);
+    taskListContainer.appendChild(taskCard);
 
     taskInput.value = '';
+    taskInput.focus();
 
-    taskCheckComplete.addEventListener('change', () => {
-      if (taskCheckComplete.checked) {
-        taskSpan.style.textDecorationLine = 'line-through';
-      } else {
-        taskSpan.style.textDecorationLine = '';
-      }
+    taskCard.addEventListener('dragstart', () => taskCard.classList.add('dragging'));
+    taskCard.addEventListener('dragend', () => taskCard.classList.remove('dragging'));
+
+    deleteTaskButton.addEventListener('click', () => taskCard.remove());
+
+    completeCheckbox.addEventListener('change', () => {
+      taskText.style.textDecorationLine = completeCheckbox.checked ? 'line-through' : '';
     });
   });
+
   taskInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') addTask.click();
+    if (e.key === 'Enter') addTaskButton.click();
   });
 }
 
-listInput.addEventListener('keypress', (e) => {
-  if (e.key == 'Enter') addList.click();
+newListInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') addListButton.click();
 });
 
-addList.addEventListener('click', () => createList());
+addListButton.addEventListener('click', createList);
 
 function getDragAfterElement(container, y) {
   const draggableElements = [...container.querySelectorAll('.taskCardDraggable:not(.dragging)')];
@@ -100,7 +95,7 @@ function getDragAfterElement(container, y) {
       const box = child.getBoundingClientRect();
       const offset = y - box.top - box.height / 2;
       if (offset < 0 && offset > closest.offset) {
-        return { offset: offset, element: child };
+        return { offset, element: child };
       } else {
         return closest;
       }

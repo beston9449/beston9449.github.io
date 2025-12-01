@@ -1,5 +1,6 @@
 .list {
   border: 1px solid red;
+  padding: 10px;
 }
 
 .list h2 {
@@ -8,24 +9,26 @@
 
 .mainContainer {
   display: flex;
-  max-width: 500px;
-  max-height: 500px;
+  min-width: 500px;
+  min-height: 500px;
 }
 
 body {
   display: flex;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 .taskList {
   display: flex;
   flex-direction: column;
-  min-height: 100px;
-  min-width: 100px;
+
   border: 1px solid black;
 }
 
 .taskCardDraggable {
   padding: 10px;
+  border: 1px solid black;
   cursor: move;
 }
 
