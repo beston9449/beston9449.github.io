@@ -43,9 +43,11 @@ async function createList() {
 
   const value = newListInput.value;
 
-  await addDoc(collection(db, 'Lists'), {
+  const docRef = await addDoc(collection(db, 'Lists'), {
     title: value,
   });
+
+  listElement.dataset.listId = docRef.id;
 
   //Edit list title
   listTitle.addEventListener('click', () => {
@@ -93,8 +95,8 @@ async function createList() {
     }
   });
 
-  addTaskButton.addEventListener('click', () => {
-    let taskCard = createTaskCard(taskInput.value);
+  addTaskButton.addEventListener('click', async () => {
+    let taskCard = await createTaskCard(taskInput.value, listElement.dataset.listId);
     taskListContainer.appendChild(taskCard);
 
     taskInput.value = '';
@@ -129,7 +131,7 @@ function getDragAfterElement(container, y) {
   ).element;
 }
 
-function createTaskCard(taskText) {
+async function createTaskCard(taskText, listId) {
   let taskCard = document.createElement('div');
   taskCard.className = 'taskCardDraggable';
   taskCard.draggable = 'true';
@@ -137,6 +139,9 @@ function createTaskCard(taskText) {
   let taskSpan = document.createElement('span');
   taskSpan.textContent = taskText;
 
+  await addDoc(collection(db, 'Lists', listId, 'tasks'), {
+    title: taskText,
+  });
 
   //Editing tasks
   taskSpan.addEventListener('click', () => {
