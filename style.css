@@ -5,12 +5,18 @@
 
 .list h2 {
   color: blue;
+  cursor: pointer;
+}
+
+.taskSpan {
+  cursor: pointer;
 }
 
 .mainContainer {
   display: flex;
-  min-width: 500px;
-  min-height: 500px;
+  min-width: 100px;
+  min-height: 100px;
+  border: 1px solid black;
 }
 
 body {
@@ -32,6 +38,9 @@ body {
   cursor: move;
 }
 
+.taskCardDraggable span {
+  cursor: pointer;
+}
 .taskCardDraggable.dragging {
   opacity: 0.5;
 }
