@@ -50,25 +50,7 @@ async function createList() {
   listElement.dataset.listId = docRef.id;
 
   //Edit list title
-  listTitle.addEventListener('click', () => {
-    const input = document.createElement('input');
-    input.value = listTitle.textContent;
-    listElement.replaceChild(input, listTitle);
-    input.focus();
-    input.select();
-
-    input.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        listTitle.textContent = input.value;
-        listElement.replaceChild(listTitle, input);
-      }
-    });
-
-    input.addEventListener('blur', () => {
-      listTitle.textContent = input.value;
-      listElement.replaceChild(listTitle, input);
-    });
-  });
+  listTitle.addEventListener('click', () => editElement(listElement, listTitle));
 
   let taskInput = document.createElement('input');
   let addTaskButton = document.createElement('button');
@@ -144,33 +126,7 @@ async function createTaskCard(taskText, listId) {
   });
 
   //Editing tasks
-  taskSpan.addEventListener('click', () => {
-    console.log('Test');
-    const input = document.createElement('input');
-    input.value = taskSpan.textContent;
-    taskCard.replaceChild(input, taskSpan);
-    input.focus();
-    input.select();
-
-    input.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        taskSpan.textContent = input.value;
-        taskCard.replaceChild(taskSpan, input);
-      }
-    });
-
-    input.addEventListener('blur', () => {
-      taskSpan.textContent = input.value;
-      taskCard.replaceChild(taskSpan, input);
-    });
-
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        taskSpan.textContent = input.value;
-        taskCard.replaceChild(taskSpan, input);
-      }
-    });
-  });
+  taskSpan.addEventListener('click', () => editElement(taskCard, taskSpan));
 
   let deleteButton = document.createElement('button');
   deleteButton.textContent = 'Delete';
@@ -192,4 +148,29 @@ async function createTaskCard(taskText, listId) {
   });
 
   return taskCard;
+}
+function editElement(element, elTitle) {
+  const input = document.createElement('input');
+  input.value = elTitle.textContent;
+  element.replaceChild(input, elTitle);
+  input.focus();
+  input.select();
+
+  let replaced = false;
+
+  input.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && !replaced) {
+      replaced = true;
+      elTitle.textContent = input.value;
+      element.replaceChild(elTitle, input);
+    }
+  });
+
+  input.addEventListener('blur', () => {
+    if (!replaced) {
+      replaced = true;
+      elTitle.textContent = input.value;
+      element.replaceChild(elTitle, input);
+    }
+  });
 }
