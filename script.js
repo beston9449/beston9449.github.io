@@ -34,23 +34,15 @@ addListButton.textContent = 'Add list';
 newListContainer.appendChild(newListInput);
 newListContainer.appendChild(addListButton);
 
-async function createList() {
+function createListOnly(listName) {
   let listElement = document.createElement('div');
   listElement.className = 'list';
 
   let listTitle = document.createElement('h2');
-  listTitle.textContent = newListInput.value;
+  listTitle.textContent = listName;
 
-  const value = newListInput.value;
-
-  const docRef = await addDoc(collection(db, 'Lists'), {
-    title: value,
-  });
-
-  listElement.dataset.listId = docRef.id;
-
-  //Edit list title
-  listTitle.addEventListener('click', () => editElement(listElement, listTitle));
+  // make it editable
+  attachEditable(listElement, listTitle);
 
   let taskInput = document.createElement('input');
   let addTaskButton = document.createElement('button');
@@ -59,10 +51,30 @@ async function createList() {
   let taskListContainer = document.createElement('div');
   taskListContainer.className = 'taskList';
 
-  listElement.append(listTitle, taskInput, addTaskButton, taskListContainer);
-  boardContainer.appendChild(listElement);
+  appendElements(listElement, listTitle, taskInput, addTaskButton, taskListContainer);
 
   newListInput.value = '';
+
+  return { listElement, taskInput, addTaskButton, taskListContainer };
+}
+
+addListButton.addEventListener('click', () => {
+  const { listElement, taskInput, addTaskButton, taskListContainer } = createListOnly(
+    newListInput.value
+  );
+
+  boardContainer.appendChild(listElement);
+
+  addTaskButton.addEventListener('click', () => {
+    const taskCard = createTaskCardNew(taskInput.value);
+    taskListContainer.appendChild(taskCard);
+    taskInput.value = '';
+    taskInput.focus();
+  });
+
+  taskInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') addTaskButton.click();
+  });
 
   taskListContainer.addEventListener('dragover', (e) => {
     e.preventDefault();
@@ -76,25 +88,18 @@ async function createList() {
       taskListContainer.insertBefore(draggable, afterElement);
     }
   });
+});
 
-  addTaskButton.addEventListener('click', async () => {
-    let taskCard = await createTaskCard(taskInput.value, listElement.dataset.listId);
-    taskListContainer.appendChild(taskCard);
-
-    taskInput.value = '';
-    taskInput.focus();
-  });
-
-  taskInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') addTaskButton.click();
-  });
+function appendElements(container, ...elements) {
+  for (const element of elements) {
+    container.appendChild(element);
+  }
+  return container;
 }
 
 newListInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') addListButton.click();
 });
-
-addListButton.addEventListener('click', createList);
 
 function getDragAfterElement(container, y) {
   const draggableElements = [...container.querySelectorAll('.taskCardDraggable:not(.dragging)')];
@@ -113,7 +118,9 @@ function getDragAfterElement(container, y) {
   ).element;
 }
 
-async function createTaskCard(taskText, listId) {
+///creating a new createtaskcard function
+
+function createTaskCardNew(taskText) {
   let taskCard = document.createElement('div');
   taskCard.className = 'taskCardDraggable';
   taskCard.draggable = 'true';
@@ -121,34 +128,24 @@ async function createTaskCard(taskText, listId) {
   let taskSpan = document.createElement('span');
   taskSpan.textContent = taskText;
 
-  await addDoc(collection(db, 'Lists', listId, 'tasks'), {
-    title: taskText,
-  });
-
-  //Editing tasks
-  taskSpan.addEventListener('click', () => editElement(taskCard, taskSpan));
+  // make task editable
+  attachEditable(taskCard, taskSpan);
 
   let deleteButton = document.createElement('button');
   deleteButton.textContent = 'Delete';
   let completeCheckbox = document.createElement('input');
   completeCheckbox.type = 'checkbox';
 
-  taskCard.append(taskSpan, deleteButton, completeCheckbox);
+  attachDelete(taskCard, deleteButton);
+  attachCompleteToggle(taskSpan, completeCheckbox);
+
+  appendElements(taskCard, taskSpan, deleteButton, completeCheckbox);
   taskCard.addEventListener('dragstart', () => taskCard.classList.add('dragging'));
   taskCard.addEventListener('dragend', () => taskCard.classList.remove('dragging'));
 
-  deleteButton.addEventListener('click', () => taskCard.remove());
-
-  completeCheckbox.addEventListener('change', () => {
-    if (completeCheckbox.checked) {
-      taskSpan.style.textDecorationLine = 'line-through';
-    } else {
-      taskSpan.style.textDecorationLine = '';
-    }
-  });
-
   return taskCard;
 }
+
 function editElement(element, elTitle) {
   const input = document.createElement('input');
   input.value = elTitle.textContent;
@@ -171,6 +168,23 @@ function editElement(element, elTitle) {
       replaced = true;
       elTitle.textContent = input.value;
       element.replaceChild(elTitle, input);
+    }
+  });
+}
+
+function attachEditable(container, titleElement) {
+  titleElement.addEventListener('click', () => editElement(container, titleElement));
+}
+function attachDelete(element, deleteButton) {
+  deleteButton.addEventListener('click', () => element.remove());
+}
+
+function attachCompleteToggle(element, checkbox) {
+  checkbox.addEventListener('change', () => {
+    if (checkbox.checked) {
+      element.style.textDecorationLine = 'line-through';
+    } else {
+      element.style.textDecorationLine = '';
     }
   });
 }
